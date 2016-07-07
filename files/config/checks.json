@@ -1,0 +1,7 @@
+{
+	"check": {
+		"name": "test",
+		"command": "echo 'OK'",
+		"interval": 15
+	}
+}

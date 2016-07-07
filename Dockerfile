@@ -7,7 +7,7 @@ RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.
   && yum -y install passwd sudo git wget curl vim openssl openssh openssh-server openssh-clients
 
 # Create user
-RUN useradd hiroakis \
+RUN useradd main \
  && echo "main" | passwd main --stdin \
  && sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config \
  && sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config \
@@ -46,6 +46,14 @@ ADD ./files/repo/influxdb.repo /etc/yum.repos.d/
 RUN yum install -y influxdb
 RUN sudo service influxdb start
 
+# client
+ADD ./files/config/client.json /etc/sensu/conf.d/
+RUN touch /var/log/sensu/sensu-client.log
+RUN /opt/sensu/bin/sensu-client start -c /etc/sensu/conf.d/client.json --log /var/log/sensu/sensu-client.log -b
+
+# checks
+ADD ./files/config/checks.json /etc/sensu/conf.d/
+
 # supervisord
 RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
   && easy_install supervisor
@@ -56,8 +64,3 @@ RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 EXPOSE 22 3000 4567 5671 15672
 
 CMD ["/usr/bin/supervisord"]
-
-# client
-ADD ./files/config/client.json /etc/sensu/conf.d/
-RUN touch /var/log/sensu/sensu-client.log
-RUN /opt/sensu/bin/sensu-client start -c /etc/sensu/conf.d/client.json --log /var/log/sensu/sensu-client.log -b
