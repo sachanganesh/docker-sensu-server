@@ -42,14 +42,8 @@ RUN yum install -y uchiwa
 ADD ./files/uchiwa.json /etc/sensu/
 
 # influxdb
-RUN cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
-[influxdb]
-name = InfluxDB Repository - RHEL \$releasever
-baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
-enabled = 1
-gpgcheck = 1
-gpgkey = https://repos.influxdata.com/influxdb.key
-EOF
+ADD ./files/influxdb.repo /etc/yum.repos.d/
+RUN yum install -y influxdb
 
 sudo yum -y install influxdb
 sudo service influxdb start
