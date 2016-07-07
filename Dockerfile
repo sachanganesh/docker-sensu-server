@@ -26,23 +26,23 @@ RUN yum install -y erlang \
   && cp /joemiller.me-intro-to-sensu/server_cert.pem /etc/rabbitmq/ssl/cert.pem \
   && cp /joemiller.me-intro-to-sensu/server_key.pem /etc/rabbitmq/ssl/key.pem \
   && cp /joemiller.me-intro-to-sensu/testca/cacert.pem /etc/rabbitmq/ssl/
-ADD ./files/rabbitmq.config /etc/rabbitmq/
+ADD ./files/config/rabbitmq.config /etc/rabbitmq/
 RUN rabbitmq-plugins enable rabbitmq_management
 
 # Sensu server
-ADD ./files/sensu.repo /etc/yum.repos.d/
+ADD ./files/repo/sensu.repo /etc/yum.repos.d/
 RUN yum install -y sensu
-ADD ./files/config.json /etc/sensu/
+ADD ./files/config/config.json /etc/sensu/
 RUN mkdir -p /etc/sensu/ssl \
   && cp /joemiller.me-intro-to-sensu/client_cert.pem /etc/sensu/ssl/cert.pem \
   && cp /joemiller.me-intro-to-sensu/client_key.pem /etc/sensu/ssl/key.pem
 
 # uchiwa
 RUN yum install -y uchiwa
-ADD ./files/uchiwa.json /etc/sensu/
+ADD ./files/config/uchiwa.json /etc/sensu/
 
 # influxdb
-ADD ./files/influxdb.repo /etc/yum.repos.d/
+ADD ./files/repo/influxdb.repo /etc/yum.repos.d/
 RUN yum install -y influxdb
 RUN sudo service influxdb start
 
@@ -58,6 +58,6 @@ EXPOSE 22 3000 4567 5671 15672
 CMD ["/usr/bin/supervisord"]
 
 # client
-ADD ./files/client.json /etc/sensu/conf.d/
+ADD ./files/config/client.json /etc/sensu/conf.d/
 RUN touch /var/log/sensu/sensu-client.log
 RUN /opt/sensu/bin/sensu-client start -c /etc/sensu/conf.d/client.json --log /var/log/sensu/sensu-client.log -b
