@@ -59,3 +59,5 @@ CMD ["/usr/bin/supervisord"]
 
 # client
 ADD ./files/client.json /etc/sensu/conf.d/
+RUN touch /var/log/sensu/sensu-client.log
+RUN /opt/sensu/bin/sensu-client start -c /etc/sensu/conf.d/client.json --log /var/log/sensu/sensu-client.log -b
