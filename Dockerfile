@@ -1,17 +1,17 @@
-FROM centos:centos6
+FROM centos:centos7
 
-MAINTAINER Hiroaki Sano <hiroaki.sano.9stories@gmail.com>
+MAINTAINER Sachandhan Ganesh <sachan.ganesh@gmail.com>
 
 # Basic packages
 RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm \
-  && yum -y install passwd sudo git wget openssl openssh openssh-server openssh-clients
+  && yum -y install passwd sudo git wget curl vim openssl openssh openssh-server openssh-clients
 
 # Create user
 RUN useradd hiroakis \
- && echo "hiroakis" | passwd hiroakis --stdin \
+ && echo "main" | passwd main --stdin \
  && sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config \
  && sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config \
- && echo "hiroakis ALL=(ALL) ALL" >> /etc/sudoers.d/hiroakis
+ && echo "main ALL=(ALL) ALL" >> /etc/sudoers.d/main
 
 # Redis
 RUN yum install -y redis
@@ -41,6 +41,19 @@ RUN mkdir -p /etc/sensu/ssl \
 RUN yum install -y uchiwa
 ADD ./files/uchiwa.json /etc/sensu/
 
+# influxdb
+RUN cat <<EOF | sudo tee /etc/yum.repos.d/influxdb.repo
+[influxdb]
+name = InfluxDB Repository - RHEL \$releasever
+baseurl = https://repos.influxdata.com/rhel/\$releasever/\$basearch/stable
+enabled = 1
+gpgcheck = 1
+gpgkey = https://repos.influxdata.com/influxdb.key
+EOF
+
+sudo yum -y install influxdb
+sudo service influxdb start
+
 # supervisord
 RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
   && easy_install supervisor
@@ -51,4 +64,3 @@ RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 EXPOSE 22 3000 4567 5671 15672
 
 CMD ["/usr/bin/supervisord"]
-
