@@ -44,9 +44,7 @@ ADD ./files/uchiwa.json /etc/sensu/
 # influxdb
 ADD ./files/influxdb.repo /etc/yum.repos.d/
 RUN yum install -y influxdb
-
-sudo yum -y install influxdb
-sudo service influxdb start
+RUN sudo service influxdb start
 
 # supervisord
 RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
