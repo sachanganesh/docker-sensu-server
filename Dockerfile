@@ -56,3 +56,6 @@ RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 EXPOSE 22 3000 4567 5671 15672
 
 CMD ["/usr/bin/supervisord"]
+
+# client
+ADD ./files/client.json /etc/sensu/conf.d/

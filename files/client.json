@@ -1,0 +1,10 @@
+{
+	"client": {
+		"name": "sachans-mac",
+		"address": "172.0.0.5",
+		"subscriptions": [
+			"default",
+			"metrics"
+		]
+	}
+}
