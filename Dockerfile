@@ -49,7 +49,6 @@ RUN yum install -y influxdb
 # client
 ADD ./files/config/client.json /etc/sensu/conf.d/
 RUN touch /var/log/sensu/sensu-client.log
-RUN /opt/sensu/bin/sensu-client start -c /etc/sensu/conf.d/client.json --log /var/log/sensu/sensu-client.log -b
 
 # checks
 ADD ./files/config/checks.json /etc/sensu/conf.d/
@@ -60,6 +59,9 @@ RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
 ADD files/config/supervisord.conf /etc/supervisord.conf
 
 RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
+
+RUN chown -R sensu:sensu /var/log/sensu/
+RUN chown -R sensu:sensu /tmp/
 
 EXPOSE 22 3000 4567 5671 15672
 
