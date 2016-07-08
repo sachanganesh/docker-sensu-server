@@ -1,7 +1,9 @@
 {
-	"check": {
-		"name": "test",
-		"command": "echo 'OK'",
-		"interval": 15
+	"checks": {
+		"test": {
+			"command": "echo 'OK'; exit 0;",
+			"interval": 15,
+			"subscribers": ["metrics"]
+		}
 	}
 }
