@@ -33,25 +33,31 @@ RUN rabbitmq-plugins enable rabbitmq_management
 # Sensu server
 ADD ./files/repo/sensu.repo /etc/yum.repos.d/
 RUN yum install -y sensu
-ADD ./files/config/config.json /etc/sensu/
+ADD ./files/sensu/config.json /etc/sensu/
 RUN mkdir -p /etc/sensu/ssl \
   && cp /joemiller.me-intro-to-sensu/client_cert.pem /etc/sensu/ssl/cert.pem \
   && cp /joemiller.me-intro-to-sensu/client_key.pem /etc/sensu/ssl/key.pem
 
 # uchiwa
 RUN yum install -y uchiwa
-ADD ./files/config/uchiwa.json /etc/sensu/
+ADD ./files/sensu/uchiwa.json /etc/sensu/
+
+# client
+ADD ./files/sensu/client.json /etc/sensu/conf.d/clients/
+RUN touch /var/log/sensu/sensu-client.log
 
 # influxdb
 ADD ./files/repo/influxdb.repo /etc/yum.repos.d/
 RUN yum install -y influxdb
-
-# client
-ADD ./files/config/client.json /etc/sensu/conf.d/
-RUN touch /var/log/sensu/sensu-client.log
+ADD ./files/sensu/influx.json /etc/sensu/conf.d/
+RUN /opt/sensu/embedded/bin/gem install influxdb
+RUN wget https://raw.githubusercontent.com/lusis/sensu_influxdb_handler/master/influx.rb -P /etc/sensu/extensions/
 
 # checks
-ADD ./files/config/checks.json /etc/sensu/conf.d/
+ADD ./files/sensu/checks.json /etc/sensu/conf.d/checks/
+
+# handlers
+ADD ./files/sensu/handlers.json /etc/sensu/conf.d/handlers/
 
 # supervisord
 RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
@@ -60,9 +66,13 @@ ADD files/config/supervisord.conf /etc/supervisord.conf
 
 RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 
+# setup client
 RUN chown -R sensu:sensu /var/log/sensu/
 RUN chown -R sensu:sensu /tmp/
 
-EXPOSE 22 3000 4567 5671 15672
+# setup influx
+ADD ./files/config/setup_influx.txt /tmp/sensu/
+
+EXPOSE 22 3000 4567 5671 15672 8083 8086
 
 CMD ["/usr/bin/supervisord"]
