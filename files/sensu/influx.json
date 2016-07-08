@@ -1,0 +1,13 @@
+{
+	"handlers": {
+		"influx": {
+			"type": "pipe",
+			"command": "/opt/sensu/embedded/bin/ruby /etc/sensu/extensions/influx.rb",
+			"host": "localhost",
+			"port": "8086",
+			"user": "sensu",
+			"password": "sensu",
+			"database": "sensu"
+		}
+	}
+}

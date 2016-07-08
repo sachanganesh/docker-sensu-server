@@ -3,7 +3,8 @@
 		"test": {
 			"command": "echo 'OK'; exit 0;",
 			"interval": 15,
-			"subscribers": ["metrics"]
+			"subscribers": ["metrics"],
+			"handlers": ["publish"]
 		}
 	}
 }

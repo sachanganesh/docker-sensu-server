@@ -1,0 +1,8 @@
+{
+	"handlers": {
+		"publish": {
+			"type": "set",
+			"handlers": [ "debug", "influx"]
+		}
+	}
+}
