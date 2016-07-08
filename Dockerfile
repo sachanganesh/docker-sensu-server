@@ -1,4 +1,5 @@
-FROM centos:centos7
+FROM centos:centos6
+ENV container=docker
 
 MAINTAINER Sachandhan Ganesh <sachan.ganesh@gmail.com>
 
@@ -44,7 +45,6 @@ ADD ./files/config/uchiwa.json /etc/sensu/
 # influxdb
 ADD ./files/repo/influxdb.repo /etc/yum.repos.d/
 RUN yum install -y influxdb
-RUN sudo service influxdb start
 
 # client
 ADD ./files/config/client.json /etc/sensu/conf.d/
@@ -57,7 +57,7 @@ ADD ./files/config/checks.json /etc/sensu/conf.d/
 # supervisord
 RUN wget http://peak.telecommunity.com/dist/ez_setup.py;python ez_setup.py \
   && easy_install supervisor
-ADD files/supervisord.conf /etc/supervisord.conf
+ADD files/config/supervisord.conf /etc/supervisord.conf
 
 RUN /etc/init.d/sshd start && /etc/init.d/sshd stop
 
